@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Carnet de Menus</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F3EE;
+    --surface: #FFFFFF;
+    --surface2: #F0EBE3;
+    --ink: #1C1916;
+    --ink2: #6B6359;
+    --accent: #C4622D;
+    --accent2: #E8956D;
+    --green: #4A7C59;
+    --green-light: #E8F2EC;
+    --amber: #D4A017;
+    --amber-light: #FDF6E3;
+    --border: #E2D9CF;
+    --shadow: 0 2px 12px rgba(28,25,22,0.07);
+    --shadow-lg: 0 8px 32px rgba(28,25,22,0.12);
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    font-size: 15px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--ink);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+  .logo span { color: var(--accent2); }
+
+  nav { display: flex; gap: 4px; }
+  .nav-btn {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.55);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .nav-btn:hover { color: #fff; background: rgba(255,255,255,0.08); }
+  .nav-btn.active { color: #fff; background: var(--accent); }
+
+  /* ── LAYOUT ── */
+  main { max-width: 1160px; margin: 0 auto; padding: 32px 24px; }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── WEEK SELECTOR ── */
+  .week-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow);
+  }
+  .week-nav { display: flex; align-items: center; gap: 8px; }
+  .week-nav button {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--ink2);
+    display: flex; align-items: center; justify-content: center;
+    transition: all .15s;
+  }
+  .week-nav button:hover { background: var(--surface2); color: var(--ink); }
+  .week-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink);
+    min-width: 220px;
+  }
+  .week-label small {
+    display: block;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--ink2);
+    margin-top: 1px;
+  }
+
+  .week-macros-summary {
+    margin-left: auto;
+    display: flex;
+    gap: 20px;
+  }
+  .macro-pill {
+    text-align: center;
+    min-width: 64px;
+  }
+  .macro-pill .val {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .macro-pill .lbl {
+    font-size: 11px;
+    color: var(--ink2);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-top: 3px;
+  }
+  .macro-pill.kcal .val { color: var(--accent); }
+  .macro-pill.prot .val { color: var(--green); }
+
+  /* ── DAYS GRID ── */
+  .days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 12px;
+  }
+
+  .day-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform .15s, box-shadow .15s;
+  }
+  .day-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+  .day-card.today { border-color: var(--accent); }
+
+  .day-header {
+    padding: 10px 12px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  .day-name { font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: .5px; }
+  .day-date { font-size: 11px; color: var(--ink2); }
+  .day-card.today .day-header { background: var(--accent); }
+  .day-card.today .day-name, .day-card.today .day-date { color: #fff; }
+
+  .day-meals {
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 80px;
+  }
+  .meal-slot {
+    font-size: 12px;
+  }
+  .meal-slot .slot-label {
+    color: var(--ink2);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    font-weight: 500;
+  }
+  .meal-slot .slot-val {
+    color: var(--ink);
+    font-size: 12px;
+    line-height: 1.3;
+    word-break: break-word;
+  }
+  .day-kcal {
+    padding: 8px 12px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--ink2);
+    display: flex;
+    justify-content: space-between;
+  }
+  .day-kcal strong { color: var(--accent); }
+
+  /* ── DETAIL VIEW ── */
+  .detail-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .back-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    display: flex; align-items: center; gap: 6px;
+    transition: all .15s;
+  }
+  .back-btn:hover { background: var(--surface2); }
+
+  .detail-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  .meals-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .meal-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  .meal-card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .meal-card-title .emoji { font-size: 20px; }
+
+  .macro-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .macro-box {
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    padding: 8px;
+    text-align: center;
+  }
+  .macro-box .mb-val { font-size: 16px; font-weight: 600; }
+  .macro-box .mb-lbl { font-size: 10px; color: var(--ink2); text-transform: uppercase; letter-spacing: .4px; margin-top: 2px; }
+  .macro-box.kcal { background: #FEF0E9; }
+  .macro-box.kcal .mb-val { color: var(--accent); }
+  .macro-box.prot { background: var(--green-light); }
+  .macro-box.prot .mb-val { color: var(--green); }
+
+  /* Day total row */
+  .day-totals-card {
+    background: var(--ink);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    margin-top: 4px;
+  }
+  .dt-item { text-align: center; }
+  .dt-val { font-size: 22px; font-weight: 600; }
+  .dt-lbl { font-size: 11px; opacity: .6; text-transform: uppercase; letter-spacing: .5px; margin-top: 3px; }
+  .dt-item.kcal .dt-val { color: var(--accent2); }
+  .dt-item.prot .dt-val { color: #7EC89A; }
+
+  /* ── INPUTS ── */
+  .form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+  label { font-size: 12px; font-weight: 500; color: var(--ink2); text-transform: uppercase; letter-spacing: .4px; }
+  input[type="text"], input[type="number"], textarea, select {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 9px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--surface);
+    width: 100%;
+    outline: none;
+    transition: border-color .15s;
+  }
+  input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 60px; }
+
+  .macro-inputs {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all .15s;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #B3501F; }
+  .btn-secondary { background: var(--surface2); color: var(--ink); border: 1px solid var(--border); }
+  .btn-secondary:hover { background: var(--border); }
+  .btn-danger { background: #FDECEA; color: #C0392B; border: 1px solid #FADBD8; }
+  .btn-danger:hover { background: #FADBD8; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(28,25,22,0.45);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 200;
+    opacity: 0; pointer-events: none;
+    transition: opacity .2s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 28px;
+    width: 520px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(12px);
+    transition: transform .2s;
+  }
+  .modal-overlay.open .modal { transform: none; }
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+
+  /* ── BUDGET PAGE ── */
+  .budget-top {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .budget-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+  }
+  .budget-card-title {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: var(--ink2);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .budget-amount {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .budget-amount.accent { color: var(--accent); }
+  .budget-amount.green { color: var(--green); }
+  .budget-sub { font-size: 13px; color: var(--ink2); margin-top: 6px; }
+
+  .progress-bar {
+    height: 8px;
+    background: var(--surface2);
+    border-radius: 99px;
+    margin-top: 14px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: var(--accent);
+    transition: width .4s ease;
+  }
+  .progress-fill.over { background: #C0392B; }
+  .progress-fill.ok { background: var(--green); }
+
+  .month-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .month-tab {
+    padding: 6px 14px;
+    border-radius: 99px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .month-tab.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+  .entries-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .entries-table th {
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: var(--ink2);
+    border-bottom: 1px solid var(--border);
+    font-weight: 500;
+  }
+  .entries-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .entries-table tr:last-child td { border-bottom: none; }
+  .entries-table .amount { font-weight: 600; color: var(--accent); }
+  .del-row {
+    background: none;
+    border: none;
+    color: var(--ink2);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: all .15s;
+  }
+  .del-row:hover { background: #FDECEA; color: #C0392B; }
+
+  .budget-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .week-budget-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .week-budget-row:last-child { border-bottom: none; }
+  .week-budget-label { font-weight: 500; }
+  .week-budget-amount { font-weight: 600; color: var(--accent); font-size: 16px; }
+
+  .add-entry-row {
+    display: grid;
+    grid-template-columns: 1fr 140px 160px auto;
+    gap: 10px;
+    align-items: end;
+    padding: 20px;
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    margin-top: 16px;
+  }
+
+  /* ── EMPTY STATES ── */
+  .empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--ink2);
+    font-size: 14px;
+  }
+  .empty-icon { font-size: 36px; margin-bottom: 10px; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    background: var(--ink);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all .25s;
+    z-index: 300;
+  }
+  .toast.show { transform: none; opacity: 1; }
+
+  @media (max-width: 900px) {
+    .days-grid { grid-template-columns: repeat(4, 1fr); }
+    .meals-columns { grid-template-columns: 1fr; }
+    .budget-top { grid-template-columns: 1fr; }
+    .add-entry-row { grid-template-columns: 1fr 1fr; }
+    header { padding: 0 16px; }
+    main { padding: 16px; }
+  }
+  @media (max-width: 600px) {
+    .days-grid { grid-template-columns: repeat(2, 1fr); }
+    .macro-grid { grid-template-columns: repeat(3, 1fr); }
+    .macro-inputs { grid-template-columns: repeat(3, 1fr); }
+    .day-totals-card { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Mon <span>Carnet</span> de Menus</div>
+  <nav>
+    <button class="nav-btn active" id="nav-planning" onclick="showPage('planning', this)">📅 Planning</button>
+    <button class="nav-btn" id="nav-budget" onclick="showPage('budget', this)">💰 Budget</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ══════════════════ PAGE PLANNING ══════════════════ -->
+  <div id="page-planning" class="page active">
+
+    <!-- Week bar -->
+    <div class="week-bar" id="week-bar">
+      <div class="week-nav">
+        <button onclick="changeWeek(-1)">←</button>
+        <div class="week-label">
+          <span id="week-label-text">Semaine —</span>
+          <small id="week-label-dates"></small>
+        </div>
+        <button onclick="changeWeek(1)">→</button>
+      </div>
+      <div class="week-macros-summary" id="week-macros-summary"></div>
+    </div>
+
+    <!-- Days grid -->
+    <div class="days-grid" id="days-grid"></div>
+
+    <!-- Day detail view (hidden by default) -->
+    <div id="day-detail" style="display:none;">
+      <div class="detail-header">
+        <button class="back-btn" onclick="closeDetail()">← Retour</button>
+        <div class="detail-title" id="detail-title"></div>
+      </div>
+      <div class="meals-columns" id="detail-meals-columns"></div>
+      <div class="day-totals-card" id="detail-totals"></div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════ PAGE BUDGET ══════════════════ -->
+  <div id="page-budget" class="page">
+
+    <!-- Month selector -->
+    <div class="month-tabs" id="month-tabs"></div>
+
+    <!-- Summary cards -->
+    <div class="budget-top" id="budget-summary"></div>
+
+    <!-- Add entry -->
+    <div class="budget-section">
+      <div class="section-title">➕ Ajouter des courses</div>
+      <div class="add-entry-row">
+        <div class="form-row" style="margin:0">
+          <label>Description (optionnel)</label>
+          <input type="text" id="entry-desc" placeholder="Ex: Courses Carrefour">
+        </div>
+        <div class="form-row" style="margin:0">
+          <label>Montant (€)</label>
+          <input type="number" id="entry-amount" placeholder="75" min="0" step="0.01">
+        </div>
+        <div class="form-row" style="margin:0">
+          <label>Semaine rattachée</label>
+          <select id="entry-week"></select>
+        </div>
+        <button class="btn btn-primary" onclick="addBudgetEntry()">Ajouter</button>
+      </div>
+    </div>
+
+    <!-- Per-week recap -->
+    <div class="budget-section">
+      <div class="section-title">📊 Récap par semaine</div>
+      <div id="week-budget-list"></div>
+    </div>
+
+    <!-- Entries table -->
+    <div class="budget-section">
+      <div class="section-title">🧾 Toutes les entrées</div>
+      <div id="entries-table-wrap"></div>
+    </div>
+
+  </div>
+
+</main>
+
+<!-- ══════ MEAL EDIT MODAL ══════ -->
+<div class="modal-overlay" id="meal-modal">
+  <div class="modal">
+    <div class="modal-title" id="modal-title"></div>
+    <div class="form-row">
+      <label>Plat / Description</label>
+      <textarea id="m-desc" rows="2" placeholder="Ex: Poulet rôti, légumes vapeur…"></textarea>
+    </div>
+    <div style="margin-bottom:6px;"><label>Macros (laisser vide si inconnu)</label></div>
+    <div class="macro-inputs">
+      <div class="form-row" style="margin:0"><label>Kcal</label><input type="number" id="m-kcal" min="0" placeholder="0"></div>
+      <div class="form-row" style="margin:0"><label>Prot (g)</label><input type="number" id="m-prot" min="0" placeholder="0"></div>
+      <div class="form-row" style="margin:0"><label>Gluc (g)</label><input type="number" id="m-gluc" min="0" placeholder="0"></div>
+      <div class="form-row" style="margin:0"><label>Lip (g)</label><input type="number" id="m-lip" min="0" placeholder="0"></div>
+      <div class="form-row" style="margin:0"><label>Fibr (g)</label><input type="number" id="m-fibr" min="0" placeholder="0"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-danger" onclick="deleteMeal()">Supprimer</button>
+      <button class="btn btn-primary" onclick="saveMeal()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════
+//  DATA HELPERS
+// ════════════════════════════════
+const DAYS_FR = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+const DAYS_SHORT = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+const MONTHS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+const MEAL_TYPES = [
+  { id: 'breakfast', label: 'Petit-déjeuner', emoji: '🌅' },
+  { id: 'lunch',     label: 'Déjeuner',        emoji: '☀️' },
+  { id: 'dinner',    label: 'Dîner',            emoji: '🌙' },
+  { id: 'snack',     label: 'Collation',        emoji: '🍎' },
+];
+
+function load(key, def) {
+  try { return JSON.parse(localStorage.getItem(key)) ?? def; } catch { return def; }
+}
+function save(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+
+// data['2025-W12']['2025-03-18']['lunch'] = { desc, kcal, prot, gluc, lip, fibr }
+let meals = load('mcm_meals', {});
+let budgetEntries = load('mcm_budget', []); // [{id, date, amount, weekKey, desc}]
+let budgetGoal = load('mcm_goal', 400); // monthly goal €
+
+function saveMeals()  { save('mcm_meals', meals); }
+function saveBudget() { save('mcm_budget', budgetEntries); }
+
+// ════════════════════════════════
+//  WEEK UTILITIES
+// ════════════════════════════════
+let currentWeekOffset = 0; // 0 = current week
+
+function getMonday(d) {
+  const dt = new Date(d);
+  const day = dt.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  dt.setDate(dt.getDate() + diff);
+  dt.setHours(0,0,0,0);
+  return dt;
+}
+
+function weekKey(monday) {
+  const y = monday.getFullYear();
+  const jan1 = new Date(y, 0, 1);
+  const weekNum = Math.ceil(((monday - jan1) / 86400000 + jan1.getDay() + 1) / 7);
+  return `${y}-W${String(weekNum).padStart(2,'0')}`;
+}
+
+function dateStr(d) { return d.toISOString().slice(0,10); }
+
+function getCurrentMonday() {
+  const m = getMonday(new Date());
+  m.setDate(m.getDate() + currentWeekOffset * 7);
+  return m;
+}
+
+function getWeekDays(monday) {
+  return Array.from({length:7}, (_,i) => {
+    const d = new Date(monday);
+    d.setDate(d.getDate() + i);
+    return d;
+  });
+}
+
+function fmtDate(d) { return `${d.getDate()} ${MONTHS_FR[d.getMonth()].slice(0,3)}.`; }
+
+// ════════════════════════════════
+//  NAVIGATION
+// ════════════════════════════════
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`page-${id}`).classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (id === 'planning') renderPlanning();
+  if (id === 'budget')   renderBudget();
+}
+
+// ════════════════════════════════
+//  PLANNING RENDER
+// ════════════════════════════════
+let detailDate = null;
+let detailMealType = null;
+
+function renderPlanning() {
+  const monday = getCurrentMonday();
+  const wk = weekKey(monday);
+  const days = getWeekDays(monday);
+  const today = dateStr(new Date());
+
+  // Week label
+  document.getElementById('week-label-text').textContent =
+    `Semaine ${wk.split('-W')[1]} — ${monday.getFullYear()}`;
+  document.getElementById('week-label-dates').textContent =
+    `${fmtDate(days[0])} → ${fmtDate(days[6])}`;
+
+  // Week macro totals
+  let wTotals = {kcal:0, prot:0, gluc:0, lip:0, fibr:0};
+  days.forEach(d => {
+    const ds = dateStr(d);
+    MEAL_TYPES.forEach(mt => {
+      const m = meals[wk]?.[ds]?.[mt.id];
+      if (m) { wTotals.kcal+=+m.kcal||0; wTotals.prot+=+m.prot||0; wTotals.gluc+=+m.gluc||0; wTotals.lip+=+m.lip||0; wTotals.fibr+=+m.fibr||0; }
+    });
+  });
+  document.getElementById('week-macros-summary').innerHTML = `
+    <div class="macro-pill kcal"><div class="val">${wTotals.kcal}</div><div class="lbl">kcal sem.</div></div>
+    <div class="macro-pill prot"><div class="val">${wTotals.prot}g</div><div class="lbl">protéines</div></div>
+    <div class="macro-pill"><div class="val">${wTotals.gluc}g</div><div class="lbl">glucides</div></div>
+    <div class="macro-pill"><div class="val">${wTotals.lip}g</div><div class="lbl">lipides</div></div>
+  `;
+
+  // Days grid
+  const grid = document.getElementById('days-grid');
+  grid.innerHTML = '';
+  days.forEach(d => {
+    const ds = dateStr(d);
+    const isToday = ds === today;
+    let mealSlots = '';
+    let dayKcal = 0;
+    MEAL_TYPES.forEach(mt => {
+      const m = meals[wk]?.[ds]?.[mt.id];
+      const val = m?.desc ? `<div class="slot-val">${m.desc.slice(0,40)}${m.desc.length>40?'…':''}</div>` : '';
+      dayKcal += +m?.kcal||0;
+      mealSlots += `<div class="meal-slot"><div class="slot-label">${mt.emoji} ${mt.label}</div>${val}</div>`;
+    });
+    const card = document.createElement('div');
+    card.className = `day-card${isToday?' today':''}`;
+    card.innerHTML = `
+      <div class="day-header">
+        <div class="day-name">${DAYS_SHORT[d.getDay()]}</div>
+        <div class="day-date">${fmtDate(d)}</div>
+      </div>
+      <div class="day-meals">${mealSlots}</div>
+      <div class="day-kcal"><span>Total</span><strong>${dayKcal ? dayKcal+'kcal' : '—'}</strong></div>
+    `;
+    card.onclick = () => openDetail(ds, wk, d);
+    grid.appendChild(card);
+  });
+
+  document.getElementById('days-grid').style.display = 'grid';
+  document.getElementById('day-detail').style.display = 'none';
+}
+
+function changeWeek(dir) {
+  currentWeekOffset += dir;
+  renderPlanning();
+}
+
+// ════════════════════════════════
+//  DAY DETAIL
+// ════════════════════════════════
+function openDetail(ds, wk, dayObj) {
+  detailDate = {ds, wk};
+  document.getElementById('days-grid').style.display = 'none';
+  const wb = document.getElementById('week-bar');
+  if (wb) wb.style.display = 'none';
+  document.getElementById('day-detail').style.display = 'block';
+  document.getElementById('detail-title').textContent =
+    `${DAYS_FR[dayObj.getDay()]} ${dayObj.getDate()} ${MONTHS_FR[dayObj.getMonth()]} ${dayObj.getFullYear()}`;
+
+  renderDetail(ds, wk);
+}
+
+function renderDetail(ds, wk) {
+  const col = document.getElementById('detail-meals-columns');
+  col.innerHTML = '';
+  let totals = {kcal:0, prot:0, gluc:0, lip:0, fibr:0};
+
+  MEAL_TYPES.forEach(mt => {
+    const m = meals[wk]?.[ds]?.[mt.id] || {};
+    ['kcal','prot','gluc','lip','fibr'].forEach(k => totals[k] += +m[k]||0);
+
+    const card = document.createElement('div');
+    card.className = 'meal-card';
+    card.innerHTML = `
+      <div class="meal-card-title"><span class="emoji">${mt.emoji}</span>${mt.label}</div>
+      <div style="color:var(--ink);font-size:14px;min-height:36px;line-height:1.5">${m.desc || '<span style="color:var(--ink2);font-style:italic">Non renseigné</span>'}</div>
+      <div class="macro-grid">
+        <div class="macro-box kcal"><div class="mb-val">${m.kcal||0}</div><div class="mb-lbl">kcal</div></div>
+        <div class="macro-box prot"><div class="mb-val">${m.prot||0}g</div><div class="mb-lbl">Prot.</div></div>
+        <div class="macro-box"><div class="mb-val">${m.gluc||0}g</div><div class="mb-lbl">Gluc.</div></div>
+        <div class="macro-box"><div class="mb-val">${m.lip||0}g</div><div class="mb-lbl">Lip.</div></div>
+        <div class="macro-box"><div class="mb-val">${m.fibr||0}g</div><div class="mb-lbl">Fibr.</div></div>
+      </div>
+      <div style="margin-top:12px">
+        <button class="btn btn-secondary" style="width:100%;font-size:13px" onclick="openMealModal('${ds}','${wk}','${mt.id}','${mt.label}')">✏️ Modifier</button>
+      </div>
+    `;
+    col.appendChild(card);
+  });
+
+  document.getElementById('detail-totals').innerHTML = `
+    <div class="dt-item kcal"><div class="dt-val">${totals.kcal}</div><div class="dt-lbl">kcal</div></div>
+    <div class="dt-item prot"><div class="dt-val">${totals.prot}g</div><div class="dt-lbl">Protéines</div></div>
+    <div class="dt-item"><div class="dt-val">${totals.gluc}g</div><div class="dt-lbl">Glucides</div></div>
+    <div class="dt-item"><div class="dt-val">${totals.lip}g</div><div class="dt-lbl">Lipides</div></div>
+    <div class="dt-item"><div class="dt-val">${totals.fibr}g</div><div class="dt-lbl">Fibres</div></div>
+  `;
+}
+
+function closeDetail() {
+  document.getElementById('days-grid').style.display = 'grid';
+  const wb = document.getElementById('week-bar');
+  if (wb) wb.style.display = 'flex';
+  document.getElementById('day-detail').style.display = 'none';
+  detailDate = null;
+}
+
+// ════════════════════════════════
+//  MEAL MODAL
+// ════════════════════════════════
+let modalContext = null;
+
+function openMealModal(ds, wk, mealId, mealLabel) {
+  modalContext = {ds, wk, mealId};
+  const m = meals[wk]?.[ds]?.[mealId] || {};
+  document.getElementById('modal-title').textContent = `✏️ ${mealLabel}`;
+  document.getElementById('m-desc').value = m.desc || '';
+  document.getElementById('m-kcal').value = m.kcal || '';
+  document.getElementById('m-prot').value = m.prot || '';
+  document.getElementById('m-gluc').value = m.gluc || '';
+  document.getElementById('m-lip').value  = m.lip  || '';
+  document.getElementById('m-fibr').value = m.fibr || '';
+  document.getElementById('meal-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('meal-modal').classList.remove('open');
+  modalContext = null;
+}
+
+function saveMeal() {
+  if (!modalContext) return;
+  const {ds, wk, mealId} = modalContext;
+  if (!meals[wk]) meals[wk] = {};
+  if (!meals[wk][ds]) meals[wk][ds] = {};
+  meals[wk][ds][mealId] = {
+    desc: document.getElementById('m-desc').value.trim(),
+    kcal: +document.getElementById('m-kcal').value || 0,
+    prot: +document.getElementById('m-prot').value || 0,
+    gluc: +document.getElementById('m-gluc').value || 0,
+    lip:  +document.getElementById('m-lip').value  || 0,
+    fibr: +document.getElementById('m-fibr').value || 0,
+  };
+  saveMeals();
+  closeModal();
+  renderDetail(ds, wk);
+  renderPlanning();
+  toast('Repas enregistré ✓');
+}
+
+function deleteMeal() {
+  if (!modalContext) return;
+  const {ds, wk, mealId} = modalContext;
+  if (meals[wk]?.[ds]?.[mealId]) {
+    delete meals[wk][ds][mealId];
+    saveMeals();
+  }
+  closeModal();
+  renderDetail(detailDate.ds, detailDate.wk);
+  renderPlanning();
+  toast('Repas supprimé');
+}
+
+// ════════════════════════════════
+//  BUDGET
+// ════════════════════════════════
+let selectedMonth = null; // 'YYYY-MM'
+
+function getAvailableMonths() {
+  const months = new Set();
+  budgetEntries.forEach(e => months.add(e.date.slice(0,7)));
+  // ensure current month always present
+  const now = new Date();
+  months.add(`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`);
+  return [...months].sort().reverse();
+}
+
+function renderBudget() {
+  const months = getAvailableMonths();
+  if (!selectedMonth || !months.includes(selectedMonth)) selectedMonth = months[0];
+
+  // Month tabs
+  const tabsEl = document.getElementById('month-tabs');
+  tabsEl.innerHTML = months.map(m => {
+    const [y,mo] = m.split('-');
+    return `<div class="month-tab${m===selectedMonth?' active':''}" onclick="selectMonth('${m}')">${MONTHS_FR[+mo-1]} ${y}</div>`;
+  }).join('');
+
+  // Entries for this month
+  const monthEntries = budgetEntries.filter(e => e.date.slice(0,7) === selectedMonth);
+  const monthTotal = monthEntries.reduce((s,e) => s+e.amount, 0);
+
+  // Budget goal input
+  const pct = Math.min((monthTotal / budgetGoal) * 100, 100);
+  const remaining = budgetGoal - monthTotal;
+  const fillClass = remaining < 0 ? 'over' : remaining < budgetGoal*0.15 ? '' : 'ok';
+
+  document.getElementById('budget-summary').innerHTML = `
+    <div class="budget-card">
+      <div class="budget-card-title">Dépensé ce mois</div>
+      <div class="budget-amount accent">${monthTotal.toFixed(2)} €</div>
+      <div class="budget-sub">sur <strong>${budgetGoal} €</strong> de budget mensuel
+        <button onclick="changeGoal()" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:12px;text-decoration:underline;margin-left:8px">Modifier</button>
+      </div>
+      <div class="progress-bar"><div class="progress-fill ${fillClass}" style="width:${pct}%"></div></div>
+      <div class="budget-sub" style="margin-top:8px">${remaining >= 0 ? `Il reste <strong>${remaining.toFixed(2)} €</strong>` : `<span style="color:#C0392B">Dépassement de <strong>${Math.abs(remaining).toFixed(2)} €</strong></span>`}</div>
+    </div>
+    <div class="budget-card">
+      <div class="budget-card-title">Courses ce mois — ${monthEntries.length} entrée(s)</div>
+      <div class="budget-amount green">${monthEntries.length}</div>
+      <div class="budget-sub">entrées de courses enregistrées</div>
+      <div style="margin-top:16px;font-size:14px;color:var(--ink2)">Moyenne par semaine : <strong>${monthEntries.length ? (monthTotal / getWeekCount(selectedMonth)).toFixed(2) : '0.00'} €</strong></div>
+    </div>
+  `;
+
+  // Week selector for new entry
+  const sel = document.getElementById('entry-week');
+  const wkOptions = generateWeekOptions();
+  sel.innerHTML = wkOptions.map(w => `<option value="${w.key}">${w.label}</option>`).join('');
+
+  // Per-week recap
+  const weekMap = {};
+  budgetEntries.filter(e => e.date.slice(0,7) === selectedMonth).forEach(e => {
+    weekMap[e.weekKey] = (weekMap[e.weekKey]||0) + e.amount;
+  });
+  const weekList = document.getElementById('week-budget-list');
+  if (!Object.keys(weekMap).length) {
+    weekList.innerHTML = '<div class="empty"><div class="empty-icon">📊</div>Aucune dépense ce mois</div>';
+  } else {
+    weekList.innerHTML = Object.entries(weekMap).sort().map(([wk, amt]) => `
+      <div class="week-budget-row">
+        <div class="week-budget-label">${formatWeekKey(wk)}</div>
+        <div class="week-budget-amount">${amt.toFixed(2)} €</div>
+      </div>
+    `).join('');
+  }
+
+  // Entries table
+  const wrap = document.getElementById('entries-table-wrap');
+  const allEntries = budgetEntries.slice().reverse();
+  if (!allEntries.length) {
+    wrap.innerHTML = '<div class="empty"><div class="empty-icon">🧾</div>Aucune entrée encore</div>';
+  } else {
+    wrap.innerHTML = `<table class="entries-table">
+      <thead><tr><th>Date de saisie</th><th>Description</th><th>Semaine</th><th>Montant</th><th></th></tr></thead>
+      <tbody>${allEntries.map(e => `
+        <tr>
+          <td>${new Date(e.date).toLocaleDateString('fr-FR')}</td>
+          <td>${e.desc || '—'}</td>
+          <td>${formatWeekKey(e.weekKey)}</td>
+          <td class="amount">${e.amount.toFixed(2)} €</td>
+          <td><button class="del-row" onclick="deleteBudgetEntry('${e.id}')">✕</button></td>
+        </tr>
+      `).join('')}</tbody>
+    </table>`;
+  }
+}
+
+function selectMonth(m) {
+  selectedMonth = m;
+  renderBudget();
+}
+
+function getWeekCount(monthStr) {
+  const [y,mo] = monthStr.split('-').map(Number);
+  const first = new Date(y, mo-1, 1);
+  const last  = new Date(y, mo, 0);
+  const weeks = new Set();
+  let d = new Date(first);
+  while (d <= last) { weeks.add(weekKey(getMonday(d))); d.setDate(d.getDate()+1); }
+  return weeks.size;
+}
+
+function generateWeekOptions() {
+  const options = [];
+  for (let i = -4; i <= 8; i++) {
+    const m = getMonday(new Date());
+    m.setDate(m.getDate() + i*7);
+    const wk = weekKey(m);
+    options.push({ key: wk, label: formatWeekKey(wk) });
+  }
+  return options;
+}
+
+function formatWeekKey(wk) {
+  const [y, w] = wk.split('-W');
+  // Compute start of this week
+  const jan1 = new Date(+y, 0, 1);
+  const days = (+w - 1) * 7;
+  const monday = new Date(jan1.getTime() + days * 86400000);
+  // correct to monday
+  const mon = getMonday(monday);
+  const sun = new Date(mon); sun.setDate(sun.getDate()+6);
+  return `Sem. ${w} — ${mon.getDate()} ${MONTHS_FR[mon.getMonth()].slice(0,3)}. → ${sun.getDate()} ${MONTHS_FR[sun.getMonth()].slice(0,3)}.`;
+}
+
+function addBudgetEntry() {
+  const amount = parseFloat(document.getElementById('entry-amount').value);
+  if (!amount || amount <= 0) { toast('Montant invalide'); return; }
+  const weekK = document.getElementById('entry-week').value;
+  const desc  = document.getElementById('entry-desc').value.trim();
+  const today = new Date();
+  const date  = dateStr(today);
+  // Determine month from the week the purchase is assigned to
+  budgetEntries.push({ id: crypto.randomUUID(), date, amount, weekKey: weekK, desc });
+  saveBudget();
+  document.getElementById('entry-amount').value = '';
+  document.getElementById('entry-desc').value = '';
+  renderBudget();
+  toast(`${amount.toFixed(2)} € ajoutés ✓`);
+}
+
+function deleteBudgetEntry(id) {
+  budgetEntries = budgetEntries.filter(e => e.id !== id);
+  saveBudget();
+  renderBudget();
+  toast('Entrée supprimée');
+}
+
+function changeGoal() {
+  const val = prompt(`Budget mensuel actuel : ${budgetGoal} €\nNouveau montant :`, budgetGoal);
+  const n = parseFloat(val);
+  if (!isNaN(n) && n > 0) { budgetGoal = n; save('mcm_goal', n); renderBudget(); toast('Objectif mis à jour ✓'); }
+}
+
+// ════════════════════════════════
+//  TOAST
+// ════════════════════════════════
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ════════════════════════════════
+//  CLOSE MODAL ON OVERLAY CLICK
+// ════════════════════════════════
+document.getElementById('meal-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ════════════════════════════════
+//  INIT
+// ════════════════════════════════
+renderPlanning();
+</script>
+</body>
+</html>
